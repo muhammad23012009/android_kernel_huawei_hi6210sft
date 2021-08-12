@@ -512,7 +512,7 @@ void check_setuid(int act_flag)
 
 static int __init dcheckroot_init(void)
 {
-    checkroot_ref.ro_sec = get_ro_secure();
+    checkroot_ref.ro_sec = 0;
     mutex_init(&(checkroot_ref.drt_mutex));
 	return 0;
 }
