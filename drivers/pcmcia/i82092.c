@@ -112,9 +112,13 @@ static int i82092aa_pci_probe(struct pci_dev *dev, const struct pci_device_id *i
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		sockets[i].dev = dev;
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+		sockets[i].dev = dev;
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 		sockets[i].dev = dev;
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)

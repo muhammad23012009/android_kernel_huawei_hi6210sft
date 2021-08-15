@@ -4565,8 +4565,11 @@ void hci_unregister_dev(struct hci_dev *hdev)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	int i, id;
 
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
@@ -4577,6 +4580,7 @@ void hci_unregister_dev(struct hci_dev *hdev)
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	id = hdev->id;
 =======
 	BT_DBG("%p name %s bus %d", hdev, hdev->name, hdev->bus);
@@ -4584,6 +4588,8 @@ void hci_unregister_dev(struct hci_dev *hdev)
 	hci_dev_set_flag(hdev, HCI_UNREGISTER);
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
@@ -4683,7 +4689,10 @@ EXPORT_SYMBOL(hci_unregister_dev);
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======

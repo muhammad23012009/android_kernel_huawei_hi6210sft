@@ -65,6 +65,7 @@ static struct plat_serial8250_port uart8250_data[] = {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		.iotype		= UPIO_MEM32,
 =======
 		.iotype		= IS_ENABLED(CONFIG_CPU_BIG_ENDIAN) ?
@@ -74,6 +75,8 @@ static struct plat_serial8250_port uart8250_data[] = {
 		.regshift	= 3,
 	},
 =======
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 		.iotype		= IS_ENABLED(CONFIG_CPU_BIG_ENDIAN) ?

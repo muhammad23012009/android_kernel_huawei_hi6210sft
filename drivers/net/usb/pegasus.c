@@ -786,7 +786,11 @@ static inline void disable_net_traffic(pegasus_t *pegasus)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 static inline void get_interrupt_interval(pegasus_t *pegasus)
+=======
+static inline int get_interrupt_interval(pegasus_t *pegasus)
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 static inline int get_interrupt_interval(pegasus_t *pegasus)
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
@@ -797,6 +801,7 @@ static inline int get_interrupt_interval(pegasus_t *pegasus)
 	u16 data;
 	u8 interval;
 	int ret;
+<<<<<<< HEAD
 
 	ret = read_eprom_word(pegasus, 4, &data);
 	if (ret < 0)
@@ -821,6 +826,13 @@ static inline int get_interrupt_interval(pegasus_t *pegasus)
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
+=======
+
+	ret = read_eprom_word(pegasus, 4, &data);
+	if (ret < 0)
+		return ret;
+
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	interval = data >> 8;
 	if (pegasus->usb->speed != USB_SPEED_HIGH) {
 		if (interval < 0x80) {
@@ -838,10 +850,15 @@ static inline int get_interrupt_interval(pegasus_t *pegasus)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 	return 0;
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+
+	return 0;
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 
 	return 0;
@@ -1281,12 +1298,18 @@ static int pegasus_probe(struct usb_interface *intf,
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	get_interrupt_interval(pegasus);
 =======
 	res = get_interrupt_interval(pegasus);
 	if (res)
 		goto out2;
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+	res = get_interrupt_interval(pegasus);
+	if (res)
+		goto out2;
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 	res = get_interrupt_interval(pegasus);
 	if (res)

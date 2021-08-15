@@ -164,11 +164,17 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 /* Auto-M3 Ltd. - OP-COM USB V2 - OBD interface Adapter */
 #define FTDI_AUTO_M3_OP_COM_V2_PID	0x4f50
 
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+/* Auto-M3 Ltd. - OP-COM USB V2 - OBD interface Adapter */
+#define FTDI_AUTO_M3_OP_COM_V2_PID	0x4f50
+
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 /* Auto-M3 Ltd. - OP-COM USB V2 - OBD interface Adapter */
 #define FTDI_AUTO_M3_OP_COM_V2_PID	0x4f50

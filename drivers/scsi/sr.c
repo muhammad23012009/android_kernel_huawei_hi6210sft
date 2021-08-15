@@ -253,7 +253,10 @@ static unsigned int sr_get_events(struct scsi_device *sdev)
 		return DISK_EVENT_MEDIA_CHANGE;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======

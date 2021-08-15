@@ -824,10 +824,14 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	i = pci_enable_device(pdev);
 =======
 	i = pcim_enable_device(pdev);
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+	i = pcim_enable_device(pdev);
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 	i = pcim_enable_device(pdev);
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
@@ -869,10 +873,14 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		goto err_ioremap;
 =======
 		goto err_pci_request_regions;
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+		goto err_pci_request_regions;
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 		goto err_pci_request_regions;
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
@@ -1003,12 +1011,15 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
  err_ioremap:
 	pci_release_regions(pdev);
 	pci_set_drvdata(pdev, NULL);
 
 =======
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
@@ -3283,6 +3294,7 @@ static void natsemi_remove1(struct pci_dev *pdev)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	pci_release_regions (pdev);
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
@@ -3290,6 +3302,8 @@ static void natsemi_remove1(struct pci_dev *pdev)
 	free_netdev (dev);
 	pci_set_drvdata(pdev, NULL);
 =======
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	iounmap(ioaddr);

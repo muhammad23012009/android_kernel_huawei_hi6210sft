@@ -2668,11 +2668,14 @@ static int reiserfs_fill_super(struct super_block *s, void *data, int silent)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	s->s_root = d_make_root(root_inode);
 	if (!s->s_root)
 		goto error;
 	// define and initialize hash function
 =======
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======

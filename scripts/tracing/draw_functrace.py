@@ -24,10 +24,14 @@ Usage:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	$ scripts/draw_functrace.py < raw_trace_func > draw_functrace
 =======
 	$ scripts/tracing/draw_functrace.py < ~/raw_trace_func > draw_functrace
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+	$ scripts/tracing/draw_functrace.py < ~/raw_trace_func > draw_functrace
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 	$ scripts/tracing/draw_functrace.py < ~/raw_trace_func > draw_functrace
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
@@ -122,6 +126,7 @@ def parseLine(line):
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	m = re.match("[^]]+?\\] +([0-9.]+): (\\w+) <-(\\w+)", line)
 	if m is None:
 		raise BrokenLineException
@@ -132,6 +137,12 @@ def parseLine(line):
 		raise BrokenLineException
 	return (m.group(2), m.group(3), m.group(4))
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+	m = re.match("[^]]+?\\] +([a-z.]+) +([0-9.]+): (\\w+) <-(\\w+)", line)
+	if m is None:
+		raise BrokenLineException
+	return (m.group(2), m.group(3), m.group(4))
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 	m = re.match("[^]]+?\\] +([a-z.]+) +([0-9.]+): (\\w+) <-(\\w+)", line)
 	if m is None:

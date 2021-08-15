@@ -136,27 +136,20 @@ struct snd_seq_client_port *snd_seq_create_port(struct snd_seq_client *client,
 	if (snd_BUG_ON(!client))
 		return NULL;
 
-<<<<<<< HEAD
+
 	if (client->num_ports >= SNDRV_SEQ_MAX_PORTS - 1) {
 		snd_printk(KERN_WARNING "too many ports for client %d\n", client->number);
-=======
-	if (client->num_ports >= SNDRV_SEQ_MAX_PORTS) {
-		pr_warn("ALSA: seq: too many ports for client %d\n", client->number);
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+
 		return NULL;
 	}
 
 	/* create a new port */
 	new_port = kzalloc(sizeof(*new_port), GFP_KERNEL);
-<<<<<<< HEAD
 	if (! new_port) {
 		snd_printd("malloc failed for registering client port\n");
 		return NULL;	/* failure, out of memory */
 	}
-=======
-	if (!new_port)
-		return NULL;	/* failure, out of memory */
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+
 	/* init port data */
 	new_port->addr.client = client->number;
 	new_port->addr.port = -1;
@@ -425,12 +418,9 @@ int snd_seq_get_port_info(struct snd_seq_client_port * port,
  * invoked.
  * This feature is useful if these callbacks are associated with
  * initialization or termination of devices (see seq_midi.c).
-<<<<<<< HEAD
  *
  * If callback_all option is set, the callback function is invoked
  * at each connection/disconnection. 
-=======
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
  */
 
 static int subscribe_port(struct snd_seq_client *client,
@@ -444,11 +434,9 @@ static int subscribe_port(struct snd_seq_client *client,
 	if (!try_module_get(port->owner))
 		return -EFAULT;
 	grp->count++;
-<<<<<<< HEAD
+
 	if (grp->open && (port->callback_all || grp->count == 1)) {
-=======
-	if (grp->open && grp->count == 1) {
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+
 		err = grp->open(port->private_data, info);
 		if (err < 0) {
 			module_put(port->owner);
@@ -473,11 +461,9 @@ static int unsubscribe_port(struct snd_seq_client *client,
 	if (! grp->count)
 		return -EINVAL;
 	grp->count--;
-<<<<<<< HEAD
+
 	if (grp->close && (port->callback_all || grp->count == 0))
-=======
-	if (grp->close && grp->count == 0)
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+
 		err = grp->close(port->private_data, info);
 	if (send_ack && client->type == USER_CLIENT)
 		snd_seq_client_notify_subscription(port->addr.client, port->addr.port,
@@ -558,30 +544,16 @@ static int check_and_subscribe_port(struct snd_seq_client *client,
 	return err;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 static void delete_and_unsubscribe_port(struct snd_seq_client *client,
 					struct snd_seq_client_port *port,
 					struct snd_seq_subscribers *subs,
 					bool is_src, bool ack)
-=======
-=======
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
-=======
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
+
 /* called with grp->list_mutex held */
 static void __delete_and_unsubscribe_port(struct snd_seq_client *client,
 					  struct snd_seq_client_port *port,
 					  struct snd_seq_subscribers *subs,
 					  bool is_src, bool ack)
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
-=======
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
-=======
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 {
 	struct snd_seq_port_subs_info *grp;
 	struct list_head *list;
@@ -589,39 +561,23 @@ static void __delete_and_unsubscribe_port(struct snd_seq_client *client,
 
 	grp = is_src ? &port->c_src : &port->c_dest;
 	list = is_src ? &subs->src_list : &subs->dest_list;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 	down_write(&grp->list_mutex);
-=======
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
-=======
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
-=======
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
+
 	write_lock_irq(&grp->list_lock);
 	empty = list_empty(list);
 	if (!empty)
 		list_del_init(list);
 	grp->exclusive = 0;
 	write_unlock_irq(&grp->list_lock);
-<<<<<<< HEAD
+
 	up_write(&grp->list_mutex);
-=======
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	if (!empty)
 		unsubscribe_port(client, port, grp, &subs->info, ack);
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
-=======
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
+
 static void delete_and_unsubscribe_port(struct snd_seq_client *client,
 					struct snd_seq_client_port *port,
 					struct snd_seq_subscribers *subs,
@@ -688,16 +644,7 @@ int snd_seq_port_disconnect(struct snd_seq_client *connector,
 			    struct snd_seq_client_port *dest_port,
 			    struct snd_seq_port_subscribe *info)
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	struct snd_seq_port_subs_info *src = &src_port->c_src;
-=======
-	struct snd_seq_port_subs_info *dest = &dest_port->c_dest;
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
-=======
-	struct snd_seq_port_subs_info *dest = &dest_port->c_dest;
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	struct snd_seq_subscribers *subs;
 	int err = -ENOENT;
 
@@ -708,106 +655,46 @@ int snd_seq_port_disconnect(struct snd_seq_client *connector,
 	/* look for the connection */
 	list_for_each_entry(subs, &dest->list_head, dest_list) {
 		if (match_subs_info(info, &subs->info)) {
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 			atomic_dec(&subs->ref_count); /* mark as not ready */
-=======
-	struct snd_seq_port_subs_info *dest = &dest_port->c_dest;
-	struct snd_seq_subscribers *subs;
-	int err = -ENOENT;
-
-	/* always start from deleting the dest port for avoiding concurrent
-	 * deletions
-	 */
-	down_write(&dest->list_mutex);
-	/* look for the connection */
-	list_for_each_entry(subs, &dest->list_head, dest_list) {
-		if (match_subs_info(info, &subs->info)) {
-			__delete_and_unsubscribe_port(dest_client, dest_port,
-						      subs, false,
-						      connector->number != dest_client->number);
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
-=======
-			__delete_and_unsubscribe_port(dest_client, dest_port,
-						      subs, false,
-						      connector->number != dest_client->number);
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
-=======
-			__delete_and_unsubscribe_port(dest_client, dest_port,
-						      subs, false,
-						      connector->number != dest_client->number);
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 			err = 0;
 			break;
 		}
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 	up_write(&src->list_mutex);
-=======
-	up_write(&dest->list_mutex);
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
-=======
-	up_write(&dest->list_mutex);
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
-=======
-	up_write(&dest->list_mutex);
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	if (err < 0)
 		return err;
 
 	delete_and_unsubscribe_port(src_client, src_port, subs, true,
 				    connector->number != src_client->number);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 	delete_and_unsubscribe_port(dest_client, dest_port, subs, false,
 				    connector->number != dest_client->number);
-=======
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
-=======
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
-=======
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
+
 	kfree(subs);
 	return 0;
 }
 
 
 /* get matched subscriber */
-<<<<<<< HEAD
 struct snd_seq_subscribers *snd_seq_port_get_subscription(struct snd_seq_port_subs_info *src_grp,
 							  struct snd_seq_addr *dest_addr)
 {
 	struct snd_seq_subscribers *s, *found = NULL;
-=======
-int snd_seq_port_get_subscription(struct snd_seq_port_subs_info *src_grp,
-				  struct snd_seq_addr *dest_addr,
-				  struct snd_seq_port_subscribe *subs)
-{
-	struct snd_seq_subscribers *s;
-	int err = -ENOENT;
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	down_read(&src_grp->list_mutex);
 	list_for_each_entry(s, &src_grp->list_head, src_list) {
 		if (addr_match(dest_addr, &s->info.dest)) {
-<<<<<<< HEAD
+
 			found = s;
-=======
-			*subs = s->info;
-			err = 0;
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 			break;
 		}
 	}
 	up_read(&src_grp->list_mutex);
-<<<<<<< HEAD
+
 	return found;
-=======
-	return err;
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+
 }
 
 /*

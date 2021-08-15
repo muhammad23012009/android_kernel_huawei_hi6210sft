@@ -748,9 +748,13 @@ static struct usb_serial_driver ch341_device = {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	.bulk_in_size      = 512,
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+	.bulk_in_size      = 512,
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 	.bulk_in_size      = 512,
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)

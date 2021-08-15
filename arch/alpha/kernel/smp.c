@@ -670,10 +670,14 @@ smp_send_stop(void)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	cpumask_copy(&to_whom, cpu_possible_mask);
 =======
 	cpumask_copy(&to_whom, cpu_online_mask);
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+	cpumask_copy(&to_whom, cpu_online_mask);
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 	cpumask_copy(&to_whom, cpu_online_mask);
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
