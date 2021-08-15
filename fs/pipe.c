@@ -34,7 +34,10 @@
 
 /*
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
  * New pipe buffers will be restricted to this size while the user is exceeding
  * their pipe buffer quota. The general pipe use case needs at least two
  * buffers: one for data yet to be read, and one for new data. If this is less
@@ -50,7 +53,10 @@
 #define PIPE_MIN_DEF_BUFFERS 2
 
 /*
+<<<<<<< HEAD
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
  * The max size that a non-root user is allowed to grow the pipe. Can
  * be set by root in /proc/sys/fs/pipe-max-size
  */

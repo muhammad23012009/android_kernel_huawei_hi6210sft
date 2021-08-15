@@ -746,9 +746,13 @@ static struct usb_serial_driver ch341_device = {
 		.name	= "ch341-uart",
 	},
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	.bulk_in_size      = 512,
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+	.bulk_in_size      = 512,
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	.id_table          = id_table,
 	.num_ports         = 1,
 	.open              = ch341_open,

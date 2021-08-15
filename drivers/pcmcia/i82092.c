@@ -110,9 +110,13 @@ static int i82092aa_pci_probe(struct pci_dev *dev, const struct pci_device_id *i
 		sockets[i].card_state = 1; /* 1 = present but empty */
 		sockets[i].io_base = pci_resource_start(dev, 0);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		sockets[i].dev = dev;
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+		sockets[i].dev = dev;
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 		sockets[i].socket.features |= SS_CAP_PCCARD;
 		sockets[i].socket.map_size = 0x1000;
 		sockets[i].socket.irq_mask = 0;

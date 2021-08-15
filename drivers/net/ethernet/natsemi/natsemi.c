@@ -822,10 +822,14 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
 #endif
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	i = pci_enable_device(pdev);
 =======
 	i = pcim_enable_device(pdev);
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+	i = pcim_enable_device(pdev);
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	if (i) return i;
 
 	/* natsemi has a non-standard PM control register
@@ -859,10 +863,14 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (!ioaddr) {
 		i = -ENOMEM;
 <<<<<<< HEAD
+<<<<<<< HEAD
 		goto err_ioremap;
 =======
 		goto err_pci_request_regions;
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+		goto err_pci_request_regions;
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	}
 
 	/* Work around the dropped serial bit. */
@@ -985,12 +993,15 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
 	iounmap(ioaddr);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
  err_ioremap:
 	pci_release_regions(pdev);
 	pci_set_drvdata(pdev, NULL);
 
 =======
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
  err_pci_request_regions:
 	free_netdev(dev);
 	return i;
@@ -3259,7 +3270,10 @@ static void natsemi_remove1(struct pci_dev *pdev)
 	NATSEMI_REMOVE_FILE(pdev, dspcfg_workaround);
 	unregister_netdev (dev);
 <<<<<<< HEAD
+<<<<<<< HEAD
 	pci_release_regions (pdev);
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	iounmap(ioaddr);
 	free_netdev (dev);
 	pci_set_drvdata(pdev, NULL);

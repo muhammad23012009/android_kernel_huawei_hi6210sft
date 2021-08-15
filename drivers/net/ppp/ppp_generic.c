@@ -311,7 +311,11 @@ static int ppp_connect_channel(struct channel *pch, int unit);
 static int ppp_disconnect_channel(struct channel *pch);
 static void ppp_destroy_channel(struct channel *pch);
 <<<<<<< HEAD
+<<<<<<< HEAD
 static int unit_get(struct idr *p, void *ptr);
+=======
+static int unit_get(struct idr *p, void *ptr, int min);
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 static int unit_set(struct idr *p, void *ptr, int n);
 static void unit_put(struct idr *p, int n);
 static void *unit_find(struct idr *p, int n);
@@ -3693,6 +3697,7 @@ static int unit_set(struct idr *p, void *ptr, int n)
 
 /* get new free unit number and associate pointer with it */
 <<<<<<< HEAD
+<<<<<<< HEAD
 static int unit_get(struct idr *p, void *ptr)
 {
 	return idr_alloc(p, ptr, 0, 0, GFP_KERNEL);
@@ -3701,6 +3706,11 @@ static int unit_get(struct idr *p, void *ptr, int min)
 {
 	return idr_alloc(p, ptr, min, 0, GFP_KERNEL);
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+static int unit_get(struct idr *p, void *ptr, int min)
+{
+	return idr_alloc(p, ptr, min, 0, GFP_KERNEL);
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 }
 
 /* put unit number back to a pool */

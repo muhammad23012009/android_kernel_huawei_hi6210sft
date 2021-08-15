@@ -4563,12 +4563,16 @@ EXPORT_SYMBOL(hci_register_dev);
 void hci_unregister_dev(struct hci_dev *hdev)
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	int i, id;
 
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	BT_DBG("%p name %s bus %d", hdev, hdev->name, hdev->bus);
 
 	set_bit(HCI_UNREGISTER, &hdev->dev_flags);
 
+<<<<<<< HEAD
 	id = hdev->id;
 =======
 	BT_DBG("%p name %s bus %d", hdev, hdev->name, hdev->bus);
@@ -4576,6 +4580,8 @@ void hci_unregister_dev(struct hci_dev *hdev)
 	hci_dev_set_flag(hdev, HCI_UNREGISTER);
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	write_lock(&hci_dev_list_lock);
 	list_del(&hdev->list);
 	write_unlock(&hci_dev_list_lock);
@@ -4669,7 +4675,10 @@ EXPORT_SYMBOL(hci_unregister_dev);
 
 	ida_simple_remove(&hci_index_ida, hdev->id);
 }
+<<<<<<< HEAD
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 
 /* Suspend HCI device */
 int hci_suspend_dev(struct hci_dev *hdev)

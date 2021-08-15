@@ -2509,11 +2509,14 @@ int vb2_core_qbuf(struct vb2_queue *q, unsigned int index, void *pb)
 	 * dequeued in dqbuf.
 	 */
 <<<<<<< HEAD
+<<<<<<< HEAD
 	list_add_tail(&vb->queued_entry, &q->queued_list);
 	q->waiting_for_buffers = false;
 	vb->state = VB2_BUF_STATE_QUEUED;
 
 =======
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	orig_state = vb->state;
 	list_add_tail(&vb->queued_entry, &q->queued_list);
 	q->queued_count++;

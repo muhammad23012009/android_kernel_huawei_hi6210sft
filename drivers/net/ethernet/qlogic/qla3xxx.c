@@ -175,8 +175,11 @@ static int ql_wait_for_drvr_lock(struct ql3_adapter *qdev)
 			return 1;
 		}
 <<<<<<< HEAD
+<<<<<<< HEAD
 	}
 =======
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 		mdelay(1000);
 	} while (++i < 10);
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
@@ -3338,10 +3341,14 @@ static int ql_adapter_reset(struct ql3_adapter *qdev)
 			break;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		ssleep(1);
 =======
 		mdelay(1000);
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+		mdelay(1000);
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	} while ((--max_wait_time));
 
 	/*
@@ -3378,10 +3385,14 @@ static int ql_adapter_reset(struct ql3_adapter *qdev)
 			if ((value & ISP_CONTROL_FSR) == 0)
 				break;
 <<<<<<< HEAD
+<<<<<<< HEAD
 			ssleep(1);
 =======
 			mdelay(1000);
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+			mdelay(1000);
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 		} while ((--max_wait_time));
 	}
 	if (max_wait_time == 0)

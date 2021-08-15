@@ -22,10 +22,14 @@ Usage:
 	Wait some times but not too much, the script is a bit slow.
 	Break the pipe (Ctrl + Z)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	$ scripts/draw_functrace.py < raw_trace_func > draw_functrace
 =======
 	$ scripts/tracing/draw_functrace.py < ~/raw_trace_func > draw_functrace
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+	$ scripts/tracing/draw_functrace.py < ~/raw_trace_func > draw_functrace
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	Then you have your drawn trace in draw_functrace
 """
 
@@ -112,6 +116,7 @@ def parseLine(line):
 	if line.startswith("#"):
 		raise CommentLineException
 <<<<<<< HEAD
+<<<<<<< HEAD
 	m = re.match("[^]]+?\\] +([0-9.]+): (\\w+) <-(\\w+)", line)
 	if m is None:
 		raise BrokenLineException
@@ -122,6 +127,12 @@ def parseLine(line):
 		raise BrokenLineException
 	return (m.group(2), m.group(3), m.group(4))
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+	m = re.match("[^]]+?\\] +([a-z.]+) +([0-9.]+): (\\w+) <-(\\w+)", line)
+	if m is None:
+		raise BrokenLineException
+	return (m.group(2), m.group(3), m.group(4))
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 
 
 def main():

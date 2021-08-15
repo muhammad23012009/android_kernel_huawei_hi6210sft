@@ -397,6 +397,7 @@ static const struct attribute_group *bt_host_groups[] = {
 static void bt_host_release(struct device *dev)
 {
 	struct hci_dev *hdev = to_hci_dev(dev);
+<<<<<<< HEAD
 =======
 static void bt_host_release(struct device *dev)
 {
@@ -405,6 +406,11 @@ static void bt_host_release(struct device *dev)
 	if (hci_dev_test_flag(hdev, HCI_UNREGISTER))
 		hci_cleanup_dev(hdev);
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+
+	if (hci_dev_test_flag(hdev, HCI_UNREGISTER))
+		hci_cleanup_dev(hdev);
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	kfree(hdev);
 	module_put(THIS_MODULE);
 }

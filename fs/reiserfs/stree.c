@@ -534,7 +534,10 @@ void pathrelse(struct treepath *search_path)
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 static int has_valid_deh_location(struct buffer_head *bh, struct item_head *ih)
 {
 	struct reiserfs_de_head *deh;
@@ -553,7 +556,10 @@ static int has_valid_deh_location(struct buffer_head *bh, struct item_head *ih)
 	return 1;
 }
 
+<<<<<<< HEAD
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 static int is_leaf(char *buf, int blocksize, struct buffer_head *bh)
 {
 	struct block_head *blkh;
@@ -632,11 +638,14 @@ static int is_leaf(char *buf, int blocksize, struct buffer_head *bh)
 			return 0;
 		}
 <<<<<<< HEAD
+<<<<<<< HEAD
 		prev_location = ih_location(ih);
 	}
 
 	// one may imagine much more checks
 =======
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 		if (is_direntry_le_ih(ih)) {
 			if (ih_item_len(ih) < (ih_entry_count(ih) * IH_SIZE)) {
 				reiserfs_warning(NULL, "reiserfs-5093",
