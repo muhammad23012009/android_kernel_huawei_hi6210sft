@@ -3709,11 +3709,14 @@ static void vxge_device_unregister(struct __vxge_hw_device *hldev)
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	/* we are safe to free it now */
 	free_netdev(dev);
 
 =======
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	vxge_debug_init(vdev->level_trace, "%s: ethernet device unregistered",
@@ -3722,11 +3725,17 @@ static void vxge_device_unregister(struct __vxge_hw_device *hldev)
 			     __func__, __LINE__);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 	/* we are safe to free it now */
 	free_netdev(dev);
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+
+	/* we are safe to free it now */
+	free_netdev(dev);
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 
 	/* we are safe to free it now */

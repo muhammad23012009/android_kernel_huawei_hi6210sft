@@ -344,11 +344,17 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 		;	/* ConneXT has no sbrn register */
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	else if (pdev->vendor == PCI_VENDOR_ID_HUAWEI
 			 && pdev->device == 0xa239)
 		;	/* HUAWEI Kunpeng920 USB EHCI has no sbrn register */
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+	else if (pdev->vendor == PCI_VENDOR_ID_HUAWEI
+			 && pdev->device == 0xa239)
+		;	/* HUAWEI Kunpeng920 USB EHCI has no sbrn register */
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 	else if (pdev->vendor == PCI_VENDOR_ID_HUAWEI
 			 && pdev->device == 0xa239)

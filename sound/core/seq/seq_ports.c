@@ -560,11 +560,14 @@ static int check_and_subscribe_port(struct snd_seq_client *client,
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 static void delete_and_unsubscribe_port(struct snd_seq_client *client,
 					struct snd_seq_client_port *port,
 					struct snd_seq_subscribers *subs,
 					bool is_src, bool ack)
 =======
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 /* called with grp->list_mutex held */
@@ -573,7 +576,10 @@ static void __delete_and_unsubscribe_port(struct snd_seq_client *client,
 					  struct snd_seq_subscribers *subs,
 					  bool is_src, bool ack)
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 {
@@ -585,9 +591,12 @@ static void __delete_and_unsubscribe_port(struct snd_seq_client *client,
 	list = is_src ? &subs->src_list : &subs->dest_list;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	down_write(&grp->list_mutex);
 =======
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	write_lock_irq(&grp->list_lock);
@@ -607,7 +616,10 @@ static void __delete_and_unsubscribe_port(struct snd_seq_client *client,
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 static void delete_and_unsubscribe_port(struct snd_seq_client *client,
@@ -678,7 +690,11 @@ int snd_seq_port_disconnect(struct snd_seq_client *connector,
 {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	struct snd_seq_port_subs_info *src = &src_port->c_src;
+=======
+	struct snd_seq_port_subs_info *dest = &dest_port->c_dest;
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 	struct snd_seq_port_subs_info *dest = &dest_port->c_dest;
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
@@ -692,6 +708,7 @@ int snd_seq_port_disconnect(struct snd_seq_client *connector,
 	/* look for the connection */
 	list_for_each_entry(subs, &dest->list_head, dest_list) {
 		if (match_subs_info(info, &subs->info)) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 			atomic_dec(&subs->ref_count); /* mark as not ready */
 =======
@@ -715,16 +732,25 @@ int snd_seq_port_disconnect(struct snd_seq_client *connector,
 						      subs, false,
 						      connector->number != dest_client->number);
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
+=======
+			__delete_and_unsubscribe_port(dest_client, dest_port,
+						      subs, false,
+						      connector->number != dest_client->number);
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 			err = 0;
 			break;
 		}
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	up_write(&src->list_mutex);
 =======
 	up_write(&dest->list_mutex);
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+	up_write(&dest->list_mutex);
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 	up_write(&dest->list_mutex);
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
@@ -735,10 +761,13 @@ int snd_seq_port_disconnect(struct snd_seq_client *connector,
 				    connector->number != src_client->number);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	delete_and_unsubscribe_port(dest_client, dest_port, subs, false,
 				    connector->number != dest_client->number);
 =======
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	kfree(subs);

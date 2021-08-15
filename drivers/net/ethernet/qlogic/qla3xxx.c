@@ -176,8 +176,11 @@ static int ql_wait_for_drvr_lock(struct ql3_adapter *qdev)
 		}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	}
 =======
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 		mdelay(1000);
@@ -3342,10 +3345,14 @@ static int ql_adapter_reset(struct ql3_adapter *qdev)
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		ssleep(1);
 =======
 		mdelay(1000);
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+		mdelay(1000);
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 		mdelay(1000);
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
@@ -3386,10 +3393,14 @@ static int ql_adapter_reset(struct ql3_adapter *qdev)
 				break;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			ssleep(1);
 =======
 			mdelay(1000);
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+			mdelay(1000);
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 			mdelay(1000);
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)

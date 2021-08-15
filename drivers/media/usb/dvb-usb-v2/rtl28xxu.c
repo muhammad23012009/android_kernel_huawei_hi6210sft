@@ -84,6 +84,7 @@ static int rtl28xxu_ctrl_msg(struct dvb_usb_device *d, struct rtl28xxu_req *req)
 		requesttype = (USB_TYPE_VENDOR | USB_DIR_IN);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		pipe = usb_rcvctrlpipe(d->udev, 0);
 =======
 
@@ -125,6 +126,8 @@ err:
 
 static int rtl28xx_wr_regs(struct dvb_usb_device *d, u16 reg, u8 *val, int len)
 =======
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 
 		/*
 		 * Zero-length transfers must use usb_sndctrlpipe() and

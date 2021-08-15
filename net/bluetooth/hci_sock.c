@@ -988,6 +988,7 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		/* Detach sockets from device */
 		read_lock(&hci_sk_list.lock);
 		sk_for_each(sk, &hci_sk_list.head) {
@@ -997,10 +998,16 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
 		read_lock(&hci_sk_list.lock);
 		sk_for_each(sk, &hci_sk_list.head) {
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
+=======
+		/* Wake up sockets using this dead device */
+		read_lock(&hci_sk_list.lock);
+		sk_for_each(sk, &hci_sk_list.head) {
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 			if (hci_pi(sk)->hdev == hdev) {
 				sk->sk_err = EPIPE;
 				sk->sk_state_change(sk);
 			}
+<<<<<<< HEAD
 <<<<<<< HEAD
 			bh_unlock_sock(sk);
 =======
@@ -1012,6 +1019,8 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
 				sk->sk_state_change(sk);
 			}
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 		}
@@ -1202,6 +1211,7 @@ static int hci_sock_bound_ioctl(struct sock *sk, unsigned int cmd,
 {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	struct hci_dev *hdev = hci_pi(sk)->hdev;
 
 	if (!hdev)
@@ -1209,6 +1219,10 @@ static int hci_sock_bound_ioctl(struct sock *sk, unsigned int cmd,
 =======
 	struct hci_dev *hdev = hci_hdev_from_sock(sk);
 
+=======
+	struct hci_dev *hdev = hci_hdev_from_sock(sk);
+
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 	struct hci_dev *hdev = hci_hdev_from_sock(sk);
 
@@ -1425,7 +1439,10 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	/* Allow detaching from dead device and attaching to alive device, if
@@ -1441,7 +1458,10 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
 	hdev = NULL;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 	if (sk->sk_state == BT_BOUND) {
@@ -2189,7 +2209,10 @@ static int hci_sock_sendmsg(struct socket *sock, struct msghdr *msg,
 	if (IS_ERR(hdev)) {
 		err = PTR_ERR(hdev);
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+=======
+>>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 =======
 >>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
 		goto done;
